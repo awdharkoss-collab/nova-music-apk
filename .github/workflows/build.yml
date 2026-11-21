@@ -1,0 +1,46 @@
+name: NOVA MUSIC APK Olustur
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Java 17 Kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle Kur
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
+      - name: NOVA MUSIC Projesini Olustur
+        run: |
+          mkdir -p app/src/main/java/com/example/novamusic
+
+          printf 'pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\nrootProject.name = "NovaMusic"\ninclude ":app"\n' > settings.gradle
+
+          printf 'plugins {\n    id "com.android.application" version "8.2.2" apply false\n    id "org.jetbrains.kotlin.android" version "1.9.22" apply false\n}\n' > build.gradle
+
+          printf 'org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=true\n' > gradle.properties
+
+          printf 'plugins {\n    id "com.android.application"\n    id "org.jetbrains.kotlin.android"\n}\nandroid {\n    namespace "com.example.novamusic"\n    compileSdk 34\n    defaultConfig {\n        applicationId "com.example.novamusic"\n        minSdk 24\n        targetSdk 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }\n}\n' > app/build.gradle
+
+          echo "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLklOVEVSTkVUIiAvPgogICAgPHVzZXMtcGVybWlzc2lvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQucGVybWlzc2lvbi5BQ0NFU1NfTkVUV09SS19TVEFURSIgLz4KICAgIDxhcHBsaWNhdGlvbiBhbmRyb2lkOmxhYmVsPSJOT1ZBIE1VU0lDIiBhbmRyb2lkOnVzZXNDbGVhcnRleHRUcmFmZmljPSJ0cnVlIj4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmNvbmZpZ0NoYW5nZXM9Im9yaWVudGF0aW9ufHNjcmVlblNpemV8a2V5Ym9hcmRIaWRkZW4iIGFuZHJvaWQ6ZXhwb3J0ZWQ9InRydWUiPgogICAgICAgICAgICA8aW50ZW50LWZpbHRlcj4KICAgICAgICAgICAgICAgIDxhY3Rpb24gYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5hY3Rpb24uTUFJTiIgLz4KICAgICAgICAgICAgICAgIDxjYXRlZ29yeSBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmNhdGVnb3J5LkxBVU5DSEVSIiAvPgogICAgICAgICAgICA8L2ludGVudC1maWx0ZXI+CiAgICAgICAgPC9hY3Rpdml0eT4KICAgIDwvYXBwbGljYXRpb24+CjwvbWFuaWZlc3Q+Cg==" | base64 -d > app/src/main/AndroidManifest.xml
+
+          printf 'package com.example.novamusic\n\nimport android.annotation.SuppressLint\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebChromeClient\nimport android.webkit.WebSettings\nimport android.webkit.WebView\nimport android.webkit.WebViewClient\n\nclass MainActivity : Activity() {\n    private lateinit var webView: WebView\n\n    @SuppressLint("SetJavaScriptEnabled")\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        webView = WebView(this)\n        setContentView(webView)\n\n        webView.settings.apply {\n            javaScriptEnabled = true\n            domStorageEnabled = true\n            databaseEnabled = true\n            loadWithOverviewMode = true\n            useWideViewPort = true\n            mediaPlaybackRequiresUserGesture = false\n            cacheMode = WebSettings.LOAD_DEFAULT\n            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW\n        }\n\n        webView.webViewClient = WebViewClient()\n        webView.webChromeClient = WebChromeClient()\n        webView.loadUrl("https://github.io")\n    }\n\n    override fun onPause() {\n        // Arka plana alindiginda muzigin durmamasi icin WebView duraklatilmaz\n        super.onPause()\n    }\n\n    @Deprecated("Deprecated in Java")\n    override fun onBackPressed() {\n        if (webView.canGoBack()) {\n            webView.goBack()\n        } else {\n            super.onBackPressed()\n        }\n    }\n}\n' > app/src/main/java/com/example/novamusic/MainActivity.kt
+
+      - name: APK Derle
+        run: gradle assembleDebug
+
+      - name: APK Dosyasini Yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: NOVA-MUSIC-APK
+          path: app/build/outputs/apk/debug/*.apk
