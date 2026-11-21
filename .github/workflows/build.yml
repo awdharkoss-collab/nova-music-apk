@@ -27,8 +27,19 @@ jobs:
         run: |
           mkdir -p app/src/main/java/com/novamusic/ozel
           mkdir -p app/src/main/assets
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            mkdir -p app/src/main/res/mipmap-$d
+          done
 
-          cp -r *.html *.css *.js *.png *.jpg *.mp3 app/src/main/assets/ 2>/dev/null || true
+          cp -r *.html *.css *.js *.mp3 app/src/main/assets/ 2>/dev/null || true
+
+          LOGO_FILE=$(ls *.png *.jpg *.jpeg *.webp 2>/dev/null | head -n 1)
+          if [ -n "$LOGO_FILE" ]; then
+            for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+              cp "$LOGO_FILE" app/src/main/res/mipmap-$d/ic_launcher.png
+              cp "$LOGO_FILE" app/src/main/res/mipmap-$d/ic_launcher_round.png
+            done
+          fi
 
           printf 'pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\nrootProject.name = "NovaMusicOzel"\ninclude ":app"\n' > settings.gradle
 
@@ -36,9 +47,9 @@ jobs:
 
           printf 'org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=true\n' > gradle.properties
 
-          printf 'plugins {\n    id "com.android.application"\n    id "org.jetbrains.kotlin.android"\n}\nandroid {\n    namespace "com.novamusic.ozel"\n    compileSdk 34\n    defaultConfig {\n        applicationId "com.novamusic.ozel"\n        minSdk 24\n        targetSdk 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }\n}\n' > app/build.gradle
+          printf 'plugins {\n    id "com.android.application"\n    id "org.jetbrains.kotlin.android"\n}\nandroid {\n    namespace "com.novamusic.ozel"\n    compileSdk 34\n    defaultConfig {\n        applicationId "com.novamusic.ozel"\n        minSdk 24\n        targetSdk 34\n        versionCode 2\n        versionName "1.1"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }\n}\n' > app/build.gradle
 
-          echo "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLklOVEVSTkVUIiAvPgogICAgPHVzZXMtcGVybWlzc2lvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQucGVybWlzc2lvbi5BQ0NFU1NfTkVUV09SS19TVEFURSIgLz4KICAgIDxhcHBsaWNhdGlvbiBhbmRyb2lkOmxhYmVsPSJOT1ZBIE1VU0lDIiBhbmRyb2lkOnVzZXNDbGVhcnRleHRUcmFmZmljPSJ0cnVlIj4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmNvbmZpZ0NoYW5nZXM9Im9yaWVudGF0aW9ufHNjcmVlblNpemV8a2V5Ym9hcmRIaWRkZW4iIGFuZHJvaWQ6ZXhwb3J0ZWQ9InRydWUiPgogICAgICAgICAgICA8aW50ZW50LWZpbHRlcj4KICAgICAgICAgICAgICAgIDxhY3Rpb24gYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5hY3Rpb24uTUFJTiIgLz4KICAgICAgICAgICAgICAgIDxjYXRlZ29yeSBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmNhdGVnb3J5LkxBVU5DSEVSIiAvPgogICAgICAgICAgICA8L2ludGVudC1maWx0ZXI+CiAgICAgICAgPC9hY3Rpdml0eT4KICAgIDwvYXBwbGljYXRpb24+CjwvbWFuaWZlc3Q+Cg==" | base64 -d > app/src/main/AndroidManifest.xml
+          echo "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLklOVEVSTkVUIiAvPgogICAgPHVzZXMtcGVybWlzc2lvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQucGVybWlzc2lvbi5BQ0NFU1NfTkVUV09SS19TVEFURSIgLz4KICAgIDxhcHBsaWNhdGlvbiBhbmRyb2lkOmxhYmVsPSJOT1ZBIE1VU0lDIiBhbmRyb2lkOmljb249IkBtaXBtYXAvaWNfbGF1bmNoZXIiIGFuZHJvaWQ6cm91bmRJY29uPSJAbWlwbWFwL2ljX2xhdW5jaGVyX3JvdW5kIiBhbmRyb2lkOnVzZXNDbGVhcnRleHRUcmFmZmljPSJ0cnVlIj4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmNvbmZpZ0NoYW5nZXM9Im9yaWVudGF0aW9ufHNjcmVlblNpemV8a2V5Ym9hcmRIaWRkZW4iIGFuZHJvaWQ6ZXhwb3J0ZWQ9InRydWUiPgogICAgICAgICAgICA8aW50ZW50LWZpbHRlcj4KICAgICAgICAgICAgICAgIDxhY3Rpb24gYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5hY3Rpb24uTUFJTiIgLz4KICAgICAgICAgICAgICAgIDxjYXRlZ29yeSBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmNhdGVnb3J5LkxBVU5DSEVSIiAvPgogICAgICAgICAgICA8L2ludGVudC1maWx0ZXI+CiAgICAgICAgPC9hY3Rpdml0eT4KICAgIDwvYXBwbGljYXRpb24+CjwvbWFuaWZlc3Q+Cg==" | base64 -d > app/src/main/AndroidManifest.xml
 
           printf 'package com.novamusic.ozel\n\nimport android.annotation.SuppressLint\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebChromeClient\nimport android.webkit.WebSettings\nimport android.webkit.WebView\nimport android.webkit.WebViewClient\n\nclass MainActivity : Activity() {\n    private lateinit var webView: WebView\n\n    @SuppressLint("SetJavaScriptEnabled")\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        webView = WebView(this)\n        setContentView(webView)\n\n        webView.settings.apply {\n            javaScriptEnabled = true\n            domStorageEnabled = true\n            allowFileAccess = true\n            allowContentAccess = true\n            mediaPlaybackRequiresUserGesture = false\n            cacheMode = WebSettings.LOAD_NO_CACHE\n            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW\n        }\n\n        webView.webViewClient = WebViewClient()\n        webView.webChromeClient = WebChromeClient()\n        webView.loadUrl("file:///android_asset/index.html")\n    }\n\n    @Deprecated("Deprecated in Java")\n    override fun onBackPressed() {\n        if (webView.canGoBack()) {\n            webView.goBack()\n        } else {\n            super.onBackPressed()\n        }\n    }\n}\n' > app/src/main/java/com/novamusic/ozel/MainActivity.kt
 
